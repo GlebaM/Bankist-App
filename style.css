@@ -41,6 +41,7 @@ nav {
 
 .login {
   display: flex;
+  gap: 2rem;
 }
 
 .login__input {
@@ -66,13 +67,18 @@ nav {
   color: #bbb;
 }
 
-.login__btn {
+.login__btn,
+.login__logout {
   border: none;
   background: none;
   font-size: 2.2rem;
   color: inherit;
   cursor: pointer;
   transition: all 0.3s;
+}
+
+.login__logout.hide {
+  display: none;
 }
 
 .login__btn:hover,
