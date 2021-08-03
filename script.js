@@ -258,7 +258,7 @@ function loginBtnState(btn) {
 /// DISPLAYING REAL APP
 
 // 'let currentAccount' stores current account
-let currentAccount;
+let currentAccount, timer;
 
 // DISPLAY ALL VALUES ON SCREEN - summary, movements, balance
 const updateUI = function (currAcc) {
@@ -272,17 +272,28 @@ const updateUI = function (currAcc) {
 
 // Logout timer function
 const startLogOutTimer = function () {
-  //Set time to 10 mins
-  const timeToLogOut = 100;
-  // const seconds = `${timeToLogOut.getSec()}`.padStart(2, 0);
-  // const minutes = `${timeToLogOut.getMinutes()}`.padStart(2, 0);
-  setInterval(() => {
+  const tick = function () {
+    const minutes = String(Math.trunc(time / 60)).padStart(2, 0);
+    const seconds = String(time % 60).padStart(2, 0);
     labelTimer.textContent = `${minutes}:${seconds}`;
-  }, 1000);
+
+    // When 0 sec, stop timer and log out thee user
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+    //Decrease 1s
+    time--;
+  };
+  //Set time to 10 mins
+  let time = 200;
 
   //Call timer every second
+  tick();
+  const timer = setInterval(tick, 1000);
   //In each call, print the remaining time to UI
-  // When 0 sec, stop timer and log out thee user
+  return timer;
 };
 
 ///////////////////////////////////////////
@@ -310,7 +321,8 @@ const startLogOutTimer = function () {
 let now = new Date();
 const logIn = function (e) {
   e.preventDefault();
-  startLogOutTimer();
+  if (timer) clearInterval(timer);
+  timer = startLogOutTimer();
   //Find and update currentAccount
   currentAccount = findAccount(inputLoginUsername.value);
   // console.log(currentAccount);
@@ -396,6 +408,8 @@ const transferAction = function (e) {
 
   //Display page values
   updateUI(currentAccount);
+  clearInterval(timer);
+  timer = startLogOutTimer();
 };
 btnTransfer.addEventListener('click', transferAction);
 
@@ -430,6 +444,10 @@ const loanRequest = function (e) {
 
   //Set input value to empty
   inputLoanAmount.value = '';
+
+  //Reset timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
 };
 btnLoan.addEventListener('click', loanRequest);
 
@@ -470,6 +488,10 @@ btnSort.addEventListener('click', function (e) {
   e.preventDefault();
   sorted = !sorted;
   displayMovements(currentAccount, sorted);
+
+  //Reset timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 /////////////////////////////////////////////////
